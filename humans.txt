@@ -1,0 +1,16 @@
+﻿/* The humans responsible & colophon */
+/* humanstxt.org */
+
+/* TEAM */
+Javascript Rincewind: Kuba Chour, @kubachour
+			
+/* THANKS */
+							
+@robinpokorny & @Krejcek for being outstandinly kind
+
+@mj1856 for doing great moment.js
+                    
+/* SITE */
+Last update: 2015/28/6
+Misused techs: Twitter Bootstrap, Font Awesome
+Abused libraries: Jquery, moment.js, jquery-powertip, sweetalert

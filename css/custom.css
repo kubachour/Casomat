@@ -1,0 +1,73 @@
+/* Formulář */
+#variables_table {
+  width: 40%;
+  border-collapse: collapse;
+  border: 1px solid #5EA2B9;
+}
+#variables_table td {
+  border: 1px solid #789;
+}
+#variables_table tr:last-child {
+  background:#789;
+}
+
+/* Generovaná část */
+.ctverce {
+}
+
+.hiddenTextFields {
+}
+
+.box {
+    width: 1.923076923076923%;
+    height: 0.9615384615384615vw;
+    border: 1px solid darkred;
+    margin: 0.5%;
+    float:left;
+}
+
+/* barevná schémata */
+
+.map-marker-yah {
+    position: relative;
+    bottom: 60px;
+    /* left: -0.9615384615384615vw; */
+    left: -1.5vh;
+}
+
+.primarySchool {
+    background: yellowgreen;
+    border: 1px solid dodgerblue;
+}
+.secondarySchool {
+    background: #cdb800;
+    border: 1px solid dodgerblue;
+}
+.university {
+    background: #cd7400;
+    border: 1px solid dodgerblue;
+}
+.militaryService {
+    background: #3b803e;
+    border: 1px #3b803e;
+}
+.retirement {
+    background: #cd351f;
+    border: 1px #cd351f;
+}
+.firstMarriageAge {
+    background: #ffffff;
+    border: 1px #cd00c7;
+}
+.firstChildAge {
+    background: #8400cd;
+    border: 1px #8400cd;
+}
+.funFacts {
+    background: #cd00a3;
+    border: 1px solid black;
+}
+.YouAreHere {
+    border: 1px solid dodgerblue;
+    background: dodgerblue;
+}
