@@ -4,9 +4,9 @@ var User = function User (formInput,pohlaviUzivatele) {
 };
 
     User.prototype.sex = function sex () {
-        if (this.pohlavi == 'muz') {
+        if (this.pohlavi == 'muž') {
             return 'manData';
-        } else if (this.pohlavi == 'zena') {
+        } else if (this.pohlavi == 'žena') {
             return 'womanData';
         } else {
             console.log('nekdo mi tu ve formulari podstrkuje jiny pohlavi, nez jsem zvyklej');
@@ -78,8 +78,6 @@ var ZobrazUsera = function ZobrazUsera(instanceUsera) {
 
     ZobrazUsera.prototype.generujZaklad = function generujZaklad () {
     var html = "";
-        // alert, ze zadana data nema v databazi
-
     var pocetTydnu = this.navstevnik.vratRozdilTydnu(birthDayGlobalVar,this.navstevnik.rokUmrti());
         for (var i = 0; i < pocetTydnu; i++) {
         html += "<div class=\'box\' id=\'" + i + "\'></div>";
@@ -136,13 +134,26 @@ var ZobrazUsera = function ZobrazUsera(instanceUsera) {
     } else {}
 };
 
+    // pridava ukazatel
     ZobrazUsera.prototype.youAreHere = function youAreHere () {
-        var markedDate = this.navstevnik.vratRozdilTydnu();
-        var dateAsText = this.makeDateFromWeekNumber(markedDate);
-        var weekId = "#" + markedDate;
-        $(weekId).toggleClass('YouAreHere');
-        this.generateDesc(weekId, dateAsText, textDescGlobal['youAreHere'].title, textDescGlobal['youAreHere'].text, textDescGlobal['youAreHere'].fa);
+        var weekId = "#" + this.navstevnik.vratRozdilTydnu();
+        this.addNonStandardDate(this.navstevnik.vratRozdilTydnu(),'youAreHere');
         $(weekId).append("<div class='map-marker-yah'><i class='fa fa-map-marker fa-5x' style='color: #fe576b'></i></div>");
+    };
+
+    // obarvi posledni den
+    ZobrazUsera.prototype.lastDay = function lastDay () {
+        var lastdayWeek = this.navstevnik.vratRozdilTydnu(birthDayGlobalVar,this.navstevnik.rokUmrti());
+        // zeptat se jQuery na lastchild by asi fungovalo lepe
+        this.addNonStandardDate(lastdayWeek - 1 ,'lastDay');
+    };
+
+    // funkcionalita, ktera obarvi kosticku pevne zadanym datem - poradim tydne v zivote
+    ZobrazUsera.prototype.addNonStandardDate = function addNonStandardDate (week, barva) {
+        var dateAsText = this.makeDateFromWeekNumber(week);
+        var weekId = "#" + week;
+        $(weekId).toggleClass(barva);
+        this.generateDesc(weekId, dateAsText, textDescGlobal[barva].title, textDescGlobal[barva].text, textDescGlobal[barva].fa);
         this.doNotMarkId.push(weekId);
     };
 
@@ -186,6 +197,7 @@ var ZobrazUsera = function ZobrazUsera(instanceUsera) {
 
         };
 
+    // ze zadaneho cisla tydne od pocatku zivota vrati mesic a rok od
     ZobrazUsera.prototype.makeDateFromWeekNumber = function makeDateFromWeekNumber(weekId) {
         return this.navstevnik.datumNarozeniToDate().add(weekId, 'w').format('MMMM YYYY');
     };
@@ -213,6 +225,7 @@ $("form").submit(function formClick(event) {
   sexGlobalVar = navstevnik.sex();
   vykresleni.generujZaklad();
   vykresleni.youAreHere();
+  vykresleni.lastDay();
   vykresleni.showFunFacts();
   vykresleni.doplnBarvu("militaryService");
   vykresleni.doplnBarvu("retirement");

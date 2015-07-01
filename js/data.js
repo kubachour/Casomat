@@ -4,15 +4,15 @@
 historicDataListGlobal = ['lifeExpectancy', 'retirement', 'firstMarriageAge','firstChildAge', 'militaryService','primarySchool','secondarySchool','university'];
 
 textDescGlobal = {
-    'lifeExpectancy' : { title : 'Předpokládaná doba dožití', text : 'Statisticky vyjádřená doba vašeho skonu', fa : 'fa fa-cloud-upload'},
     'retirement' : { title : 'Věk odchodu do důchodu', text : 'Zde se můžete těšit na zasloužený důchod', fa : 'fa fa-trophy'},
     'firstMarriageAge' : { title : '1. sňatek', text : 'Statisticky vzato, od této chvíle byste měli být v chomoutu', fa : 'fa fa-heart'},
     'firstChildAge' : { title : '1. dítě', text : 'Ať už jste byli na dovolené v Jugoslávii nebo ne, tady by vás podle statistik měl čekat váš první potomek', fa : 'fa fa-user-plus'},
     'militaryService' : { title : 'Odchod na vojnu', text : 'Rajóny, BVP, PHM, apelplac... vzpomínáte?', fa : 'fa fa-fighter-jet'},
-    'primarySchool' : { title : 'Základní škola', text : 'xxx', fa : 'fa fa-child'},
-    'secondarySchool' : { title : 'Střední škola', text : 'xxx', fa : 'fa fa-graduation-cap'},
-    'university' : { title : 'Vysoká škola', text : 'xxx', fa : 'fa fa-university'},
-    'youAreHere' : { title : 'Sem jste se dostali', text : 'xxx', fa : 'fa fa-map-marker'}
+    'primarySchool' : { title : 'Základní škola', text : 'Ty vole, na základní škole!', fa : 'fa fa-child'},
+    'secondarySchool' : { title : 'Střední škola', text : 'Tady jste se učili pít pivo, kouřit a ... to je asi všechno', fa : 'fa fa-graduation-cap'},
+    'university' : { title : 'Vysoká škola', text : 'Určitě vám po několika letech muselo dělat radost, že jste přišli na kloub výrazům jako goniometrie, kurikulum nebo nedostatek prostředků na účtu', fa : 'fa fa-university'},
+    'youAreHere' : { title : 'Sem jste se dostali', text : 'xxx', fa : 'fa fa-map-marker'},
+    'lastDay' : { title : 'Předpokládaná doba dožití', text : 'Statisticky vyjádřená doba vašeho skonu. Doufám, že vám to tu dávalo smysl.', fa : 'fa fa-cloud-upload'}
 };
 
 manData = {

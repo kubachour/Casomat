@@ -67,7 +67,11 @@
     background: #cd00a3;
     border: 1px solid black;
 }
-.YouAreHere {
+.youAreHere {
     border: 1px solid dodgerblue;
     background: dodgerblue;
+}
+.lastDay {
+    border: black;
+    background: black;
 }
