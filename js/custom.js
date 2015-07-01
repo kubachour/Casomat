@@ -34,9 +34,11 @@ var User = function User (formInput,pohlaviUzivatele) {
         var lifeXpe = '';
         if (!window[sexGlobalVar][rok]) {
             sweetAlert('Pa-da-dam-pam','Pro zadané datum narození nemám údaje :(', 'error');
+            ga('send', 'event', { eventCategory: 'Form', eventAction: 'Submit', eventLabel: 'Invalid'}); // custom GA event při odeslání
             } else {
             lifeXpe = window[sexGlobalVar][rok].lifeExpectancy;
         }
+        ga('send', 'event', { eventCategory: 'Form', eventAction: 'Submit', eventLabel: 'Valid'}); // custom GA event při odeslání
         return moment(birthDayGlobalVar).add(lifeXpe, 'y').year();
     };
 
@@ -213,7 +215,6 @@ $("form").submit(function formClick(event) {
   vykresleni.youAreHere();
   vykresleni.showFunFacts();
   vykresleni.doplnBarvu("militaryService");
-
   vykresleni.doplnBarvu("retirement");
   vykresleni.doplnBarvu("firstMarriageAge");
   vykresleni.doplnBarvu("firstChildAge");
