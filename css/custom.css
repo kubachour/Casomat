@@ -1,17 +1,5 @@
-/* Formulář */
-#variables_table {
-  width: 40%;
-  border-collapse: collapse;
-  border: 1px solid #5EA2B9;
-}
-#variables_table td {
-  border: 1px solid #789;
-}
-#variables_table tr:last-child {
-  background:#789;
-}
 
-/* Generovaná část */
+/* Generated part */
 .ctverce {
 }
 
@@ -21,12 +9,12 @@
 .box {
     width: 1.923076923076923%;
     height: 0.9615384615384615vw;
-    border: 1px solid darkred;
+    border: 1px solid #a6a6a6;
     margin: 0.5%;
     float:left;
 }
 
-/* barevná schémata */
+/* colour schemes */
 
 .map-marker-yah {
     position: relative;
@@ -37,41 +25,45 @@
 
 .primarySchool {
     background: yellowgreen;
-    border: 1px solid dodgerblue;
+    border: yellowgreen;
 }
 .secondarySchool {
     background: #cdb800;
-    border: 1px solid dodgerblue;
+    border: #cdb800;
 }
 .university {
     background: #cd7400;
-    border: 1px solid dodgerblue;
+    border: #cd7400;
 }
 .militaryService {
-    background: #3b803e;
-    border: 1px #3b803e;
+    background: darkgreen;
+    border: darkgreen;
 }
 .retirement {
     background: #cd351f;
-    border: 1px #cd351f;
+    border: #cd351f;
 }
 .firstMarriageAge {
-    background: #ffffff;
-    border: 1px #cd00c7;
+    background: #ffabfb;
+    border: #ffabfb;
 }
 .firstChildAge {
-    background: #8400cd;
-    border: 1px #8400cd;
+    background: #4bcd75;
+    border: #4bcd75;
 }
 .funFacts {
     background: #cd00a3;
-    border: 1px solid black;
+    border: #cd00a3;
 }
 .youAreHere {
-    border: 1px solid dodgerblue;
     background: dodgerblue;
+    border: dodgerblue;
 }
 .lastDay {
-    border: black;
     background: black;
+    border: black;
+}
+.vaccination {
+    background: mediumvioletred;
+    border: mediumvioletred;
 }

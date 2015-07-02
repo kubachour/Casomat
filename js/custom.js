@@ -226,6 +226,7 @@ $("form").submit(function formClick(event) {
   vykresleni.generujZaklad();
   vykresleni.youAreHere();
   vykresleni.lastDay();
+  vykresleni.addNonStandardDate(9, "vaccination");
   vykresleni.showFunFacts();
   vykresleni.doplnBarvu("militaryService");
   vykresleni.doplnBarvu("retirement");

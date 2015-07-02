@@ -12,7 +12,8 @@ textDescGlobal = {
     'secondarySchool' : { title : 'Střední škola', text : 'Tady jste se učili pít pivo, kouřit a ... to je asi všechno', fa : 'fa fa-graduation-cap'},
     'university' : { title : 'Vysoká škola', text : 'Určitě vám po několika letech muselo dělat radost, že jste přišli na kloub výrazům jako goniometrie, kurikulum nebo nedostatek prostředků na účtu', fa : 'fa fa-university'},
     'youAreHere' : { title : 'Sem jste se dostali', text : 'xxx', fa : 'fa fa-map-marker'},
-    'lastDay' : { title : 'Předpokládaná doba dožití', text : 'Statisticky vyjádřená doba vašeho skonu. Doufám, že vám to tu dávalo smysl.', fa : 'fa fa-cloud-upload'}
+    'lastDay' : { title : 'Předpokládaná doba dožití', text : 'Statisticky vyjádřená doba vašeho skonu. Doufám, že vám to tu dávalo smysl.', fa : 'fa fa-cloud-upload'},
+    'vaccination' : { title : '1. očkování', text : 'Jau! Ta musela bolet. 1. injekce, povinné očkování ', fa : 'fa fa-medkit'}
 };
 
 manData = {
