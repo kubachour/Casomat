@@ -1,0 +1,7 @@
+﻿User-agent: *
+Disallow: /js/
+Disallow: /css/
+Disallow: /fonts/
+Disallow: /favicon/
+Disallow: /img/
+Sitemap: http://www.casomat.cz/sitemap.xml
