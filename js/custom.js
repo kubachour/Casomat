@@ -42,16 +42,17 @@ var User = function User (formInput,pohlaviUzivatele) {
         return moment(birthDayGlobalVar).add(lifeXpe, 'y').year();
     };
 
-    //Jednoducha metoda pocitani veku, nepresnost max. 3 mesice (delim 52 tydny v roce). Vraci kladna cisla v letech  zaokrouhlena nahoru
+    //Jednoducha metoda pocitani veku, nepresnost max. 3 mesice (delim 52 tydny v roce). Vraci kladna cisla v letech zaokrouhlena nahoru
     User.prototype.age = function age(){
         return Math.ceil(this.vratRozdilTydnu()/52);
+
     };
 
     // Funkce vraci rozdil poctu tydnu mezi zadanymi roky. Cisla by do funkce mela byt vkladana jako roky nebo jine datum.
     User.prototype.vratRozdilTydnu = function vratRozdilTydnu(pocetRoku){
         var firstDate = "";
         var secondDate = birthDayGlobalVar;
-        // podminka resi rozdil mezi rokem narozeni a poctem roku v argumentu v tydnech (1990 + 75.5)
+        // podminka resi rozdil mezi rokem narozeni a poctem roku v argumentu (1990 + 75.5)
         if ( arguments.length === 1 ) {
            firstDate = moment(birthDayGlobalVar).add(pocetRoku, 'y');
         }
@@ -90,18 +91,36 @@ var ZobrazUsera = function ZobrazUsera(instanceUsera) {
     var actualProperty = window[sexGlobalVar][rokNarozeni][barevneSchema];
     var markedDate = '';
     var dateAsText = '';
+    //
+    var defineStartingWeek = function (monthOfBegining, yearOfBegining, birthYear){
+         var startingMonth = moment(birthYear + yearOfBegining, 'YYYY').add(monthOfBegining, 'month');
+           if (birthDayGlobalVar < startingMonth) {
+            }
+           else {
+            startingMonth.add(12, 'month')
+            }
+        return startingMonth.diff(birthDayGlobalVar, 'weeks');
+    };
+
         // test jestli pro pohlavi existuje statisticky zaznam (odchod na vojnu pro zeny atp.)
         if (typeof actualProperty != 'undefined') {
             // test zda ma zaznam zacatek a konec
             if (actualProperty.hasOwnProperty("begining") && actualProperty.hasOwnProperty("duration")) {
-                var tydenPocatku = this.navstevnik.vratRozdilTydnu(actualProperty.begining);
-                var tydenKonce = this.navstevnik.vratRozdilTydnu(actualProperty.duration + actualProperty.begining);
-                for (var i = tydenPocatku; i <= tydenKonce; i++) {
+                //poradova cisla tydnu korigovana rucne, aby sedely mesice. Kodersky facepalm. Ale funguje to.
+                var startingInWeek = defineStartingWeek(actualProperty.monthOfBegining, actualProperty.begining, rokNarozeni) + 1;
+                var endingWeek = Math.round(startingInWeek + (actualProperty.duration * 52) + 1);
+                for (var i = startingInWeek; i <= endingWeek; i++) {
                     markedDate = "#" + i;
                     dateAsText = this.makeDateFromWeekNumber(i);
                     //vynecha oznaceni descriptionem, pokud uz ji oznacil showFunFacts (kolize s Powertip)
                     if (this.doNotMarkId.indexOf(markedDate) == -1 ) {
-                        this.generateDesc(markedDate, dateAsText, textDescGlobal[barevneSchema].title, textDescGlobal[barevneSchema].text, textDescGlobal[barevneSchema].fa);
+                        // should I use text for past or future
+                        if (this.navstevnik.vratRozdilTydnu() < i) {
+                            this.generateDesc(markedDate, dateAsText, textDescGlobal[barevneSchema].title, textDescGlobal[barevneSchema].text, textDescGlobal[barevneSchema].fa); // texts for the future
+                        } else {
+                            this.generateDesc(markedDate, dateAsText, textDescGlobal[barevneSchema].title, textDescGlobal[barevneSchema].textPast, textDescGlobal[barevneSchema].fa); // texts for the past
+                        }
+
                     } else {}
                         //oznaci spravnou tridou
                         $(markedDate).toggleClass(barevneSchema);
@@ -117,7 +136,13 @@ var ZobrazUsera = function ZobrazUsera(instanceUsera) {
                     $(tydenOznaceni).toggleClass(barevneSchema);
                     //vynecha oznaceni descriptionem, pokud uz ji oznacil showFunFacts (kolize s Powertip)
                         if (this.doNotMarkId.indexOf(tydenOznaceni) == -1 ) {
-                            this.generateDesc(tydenOznaceni, dateAsText, textDescGlobal[barevneSchema].title, textDescGlobal[barevneSchema].text, textDescGlobal[barevneSchema].fa);
+                            // should I use text for past or future
+                            if (this.navstevnik.vratRozdilTydnu() < markedDate) {
+                                this.generateDesc(tydenOznaceni, dateAsText, textDescGlobal[barevneSchema].title, textDescGlobal[barevneSchema].text, textDescGlobal[barevneSchema].fa);
+                            } else {
+                                this.generateDesc(tydenOznaceni, dateAsText, textDescGlobal[barevneSchema].title, textDescGlobal[barevneSchema].textPast, textDescGlobal[barevneSchema].fa);
+                            }
+
                          } else {
                         console.log('V prubehu oznacovani popiskem jsem narazil na id, ktere uz je oznacene: ' + this.doNotMarkId.indexOf(tydenOznaceni));
                         }
@@ -153,13 +178,16 @@ var ZobrazUsera = function ZobrazUsera(instanceUsera) {
         var dateAsText = this.makeDateFromWeekNumber(week);
         var weekId = "#" + week;
         $(weekId).toggleClass(barva);
-        this.generateDesc(weekId, dateAsText, textDescGlobal[barva].title, textDescGlobal[barva].text, textDescGlobal[barva].fa);
+        if (this.navstevnik.vratRozdilTydnu() < week) {
+            this.generateDesc(weekId, dateAsText, textDescGlobal[barva].title, textDescGlobal[barva].text, textDescGlobal[barva].fa); // texts for the future
+        } else {
+            this.generateDesc(weekId, dateAsText, textDescGlobal[barva].title, textDescGlobal[barva].textPast, textDescGlobal[barva].fa); // texts for the past
+        }
         this.doNotMarkId.push(weekId);
     };
 
     // jako divId musi byt vlozeny string (cislo id) s #
     ZobrazUsera.prototype.generateDesc = function generateDesc (divId, dateAsText, title, text, fontAwesome){
-        //var descriptionWeek = '';
         if ($(divId).prop('title')) {
             console.log("description existuje na divId " + divId + ', vynechávám id');
         } else {
