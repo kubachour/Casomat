@@ -3,6 +3,7 @@ var User = function User (formInput,pohlaviUzivatele) {
     this.formInput = formInput;
 };
 
+    // evaluates form and returns users sex
     User.prototype.sex = function sex () {
         if (this.pohlavi == 'muž') {
             return 'manData';
@@ -14,7 +15,8 @@ var User = function User (formInput,pohlaviUzivatele) {
         }
     };
 
-    User.prototype.datumNarozeniToDate = function datumNarozeniToDate(){
+    // evaluates form and returns valid Moment.js object
+    User.prototype.birthDateToDate = function birthDateToDate(){
         var formDate = moment(this.formInput, ["DD-MM-YYYY", "D-M-YYYY", "YYYY-MM-DD", "YYYY-M-DD", "YYYY-MM-D"]);
         if (formDate.isValid()) {
             return formDate;
@@ -25,75 +27,78 @@ var User = function User (formInput,pohlaviUzivatele) {
         }
     };
 
-    User.prototype.rokNarozeni = function rokNarozeni() {
+    User.prototype.birthYear = function birthYear() {
         return birthDayGlobalVar.year();
     };
 
-    User.prototype.rokUmrti = function rokUmrti(){
-        var rok = this.rokNarozeni();
+    // if there are data for particular year, it returns life expectancy in years
+    User.prototype.deathYear = function deathYear(){
+        var year = this.birthYear();
         var lifeXpe = '';
-        if (!window[sexGlobalVar][rok]) {
+        if (!window[sexGlobalVar][year]) {
             sweetAlert('Pa-da-dam-pam','Pro zadané datum narození nemám údaje :(', 'error');
             ga('send', 'event', { eventCategory: 'Form', eventAction: 'Submit', eventLabel: 'Invalid'}); // custom GA event při odeslání
             } else {
-            lifeXpe = window[sexGlobalVar][rok].lifeExpectancy;
+            lifeXpe = window[sexGlobalVar][year].lifeExpectancy;
         }
         ga('send', 'event', { eventCategory: 'Form', eventAction: 'Submit', eventLabel: 'Valid'}); // custom GA event při odeslání
         return moment(birthDayGlobalVar).add(lifeXpe, 'y').year();
     };
 
-    //Jednoducha metoda pocitani veku, nepresnost max. 3 mesice (delim 52 tydny v roce). Vraci kladna cisla v letech zaokrouhlena nahoru
+    //Simple method for calculating user's age. Returns whole number rounded up
     User.prototype.age = function age(){
-        return Math.ceil(this.vratRozdilTydnu()/52);
+        return Math.ceil(this.returnWeekDifference()/52);
 
     };
 
-    // Funkce vraci rozdil poctu tydnu mezi zadanymi roky. Cisla by do funkce mela byt vkladana jako roky nebo jine datum.
-    User.prototype.vratRozdilTydnu = function vratRozdilTydnu(pocetRoku){
+    // Returns difference between dates passed into function in weeks. Arguments should be years as number.
+    User.prototype.returnWeekDifference = function returnWeekDifference(pocetRoku){
         var firstDate = "";
         var secondDate = birthDayGlobalVar;
-        // podminka resi rozdil mezi rokem narozeni a poctem roku v argumentu (1990 + 75.5)
+        // Difference between birthday and passed years (1990 + 75.5)
         if ( arguments.length === 1 ) {
            firstDate = moment(birthDayGlobalVar).add(pocetRoku, 'y');
         }
-        // podminka resi rozdil mezi rokem narozeni a soucasnosti (pocet tydnu od narozeni az po nyni)
+        // Difference between birthday and today
         else if (arguments.length === 0){
             firstDate = moment();
         }
-        // podminka resi rozdil mezi dvema zadanymi roky. Jako druhy parametr ocekava rok konce jako number.
+        // Difference between entered dates, second is in years
         else if (arguments.length === 2) {
             firstDate = moment(arguments[0]);
             secondDate = moment(arguments[1], 'YYYY');
         }
         else {
-            //tady bude chyba
+            console.log("v parametrech pro vypocet byly vice nez 2 parametry");
         }
 
         return Math.abs(firstDate.diff(secondDate, 'weeks'));
     };
 
-var ZobrazUsera = function ZobrazUsera(instanceUsera) {
+var ShowUser = function ShowUser(instanceUsera) {
     this.navstevnik = instanceUsera;
     this.doNotMarkId = [];
   };
 
-    ZobrazUsera.prototype.generujZaklad = function generujZaklad () {
+    // Generates 'boxes', based on number of weeks user has in weeks
+    ShowUser.prototype.generateBoxes = function generateBoxes () {
     var html = "";
-    var pocetTydnu = this.navstevnik.vratRozdilTydnu(birthDayGlobalVar,this.navstevnik.rokUmrti());
-        for (var i = 0; i < pocetTydnu; i++) {
+    var weekCount = this.navstevnik.returnWeekDifference(birthDayGlobalVar,this.navstevnik.deathYear());
+        for (var i = 0; i < weekCount; i++) {
         html += "<div class=\'box\' id=\'" + i + "\'></div>";
         }
     $('.ctverce').append(html);
     };
 
-    ZobrazUsera.prototype.doplnBarvu = function doplnBarvu (barevneSchema) {
-    var rokNarozeni = this.navstevnik.rokNarozeni();
-    var actualProperty = window[sexGlobalVar][rokNarozeni][barevneSchema];
+    // ads 'color' to box, as well as description, based on data in data.js
+    ShowUser.prototype.addColor = function addColor (colorScheme) {
+    var birthYearDate = this.navstevnik.birthYear();
+    var actualProperty = window[sexGlobalVar][birthYearDate][colorScheme];
     var markedDate = '';
     var dateAsText = '';
-    //
-    var defineStartingWeek = function (monthOfBegining, yearOfBegining, birthYear){
-         var startingMonth = moment(birthYear + yearOfBegining, 'YYYY').add(monthOfBegining, 'month');
+    // function for defining right week to start with colours, when 'color' has 'monthOfBegining' and 'duration'
+    var defineStartingWeek = function (monthOfBegining, yearOfBegining, birthYearDate){
+         var startingMonth = moment(birthYearDate + yearOfBegining, 'YYYY').add(monthOfBegining, 'month');
            if (birthDayGlobalVar < startingMonth) {
             }
            else {
@@ -102,45 +107,44 @@ var ZobrazUsera = function ZobrazUsera(instanceUsera) {
         return startingMonth.diff(birthDayGlobalVar, 'weeks');
     };
 
-        // test jestli pro pohlavi existuje statisticky zaznam (odchod na vojnu pro zeny atp.)
+        // testing if data contains colorScheme for particular gender
         if (typeof actualProperty != 'undefined') {
-            // test zda ma zaznam zacatek a konec
+            // testing if 'color' has more property to decide if more boxes should be used
             if (actualProperty.hasOwnProperty("begining") && actualProperty.hasOwnProperty("duration")) {
-                //poradova cisla tydnu korigovana rucne, aby sedely mesice. Kodersky facepalm. Ale funguje to.
-                var startingInWeek = defineStartingWeek(actualProperty.monthOfBegining, actualProperty.begining, rokNarozeni) + 1;
+                //adjusting week starts in view (those +1) - School start at 1st week in September, not last in August. If done properly, this shouldn't happen :). Everything goes.
+                var startingInWeek = defineStartingWeek(actualProperty.monthOfBegining, actualProperty.begining, birthYearDate) + 1;
                 var endingWeek = Math.round(startingInWeek + (actualProperty.duration * 52) + 1);
                 for (var i = startingInWeek; i <= endingWeek; i++) {
                     markedDate = "#" + i;
                     dateAsText = this.makeDateFromWeekNumber(i);
-                    //vynecha oznaceni descriptionem, pokud uz ji oznacil showFunFacts (kolize s Powertip)
+                    // skips marking by description if already marked (Powertip doesnt handle that for some reason)
                     if (this.doNotMarkId.indexOf(markedDate) == -1 ) {
-                        // should I use text for past or future
-                        if (this.navstevnik.vratRozdilTydnu() < i) {
-                            this.generateDesc(markedDate, dateAsText, textDescGlobal[barevneSchema].title, textDescGlobal[barevneSchema].text, textDescGlobal[barevneSchema].fa); // texts for the future
+                        // Decides id text for past or future should be used
+                        if (this.navstevnik.returnWeekDifference() < i) {
+                            this.generateDesc(markedDate, dateAsText, textDescGlobal[colorScheme].title, textDescGlobal[colorScheme].text, textDescGlobal[colorScheme].fa); // texts for the future
                         } else {
-                            this.generateDesc(markedDate, dateAsText, textDescGlobal[barevneSchema].title, textDescGlobal[barevneSchema].textPast, textDescGlobal[barevneSchema].fa); // texts for the past
+                            this.generateDesc(markedDate, dateAsText, textDescGlobal[colorScheme].title, textDescGlobal[colorScheme].textPast, textDescGlobal[colorScheme].fa); // texts for the past
                         }
 
                     } else {}
-                        //oznaci spravnou tridou
-                        $(markedDate).toggleClass(barevneSchema);
+                        $(markedDate).toggleClass(colorScheme);
                         this.doNotMarkId.push(markedDate);
                     }
     }
-    // pokud barevneSchema ma jen jednu promennou
+    // if colorScheme has only one variable
              else {
-                markedDate = this.navstevnik.vratRozdilTydnu(actualProperty);
+                markedDate = this.navstevnik.returnWeekDifference(actualProperty);
                 if (markedDate != "undefined" && typeof markedDate === "number" && markedDate != 0) {
                     var tydenOznaceni = "#" + markedDate;
                     dateAsText = this.makeDateFromWeekNumber(markedDate);
-                    $(tydenOznaceni).toggleClass(barevneSchema);
+                    $(tydenOznaceni).toggleClass(colorScheme);
                     //vynecha oznaceni descriptionem, pokud uz ji oznacil showFunFacts (kolize s Powertip)
                         if (this.doNotMarkId.indexOf(tydenOznaceni) == -1 ) {
                             // should I use text for past or future
-                            if (this.navstevnik.vratRozdilTydnu() < markedDate) {
-                                this.generateDesc(tydenOznaceni, dateAsText, textDescGlobal[barevneSchema].title, textDescGlobal[barevneSchema].text, textDescGlobal[barevneSchema].fa);
+                            if (this.navstevnik.returnWeekDifference() < markedDate) {
+                                this.generateDesc(tydenOznaceni, dateAsText, textDescGlobal[colorScheme].title, textDescGlobal[colorScheme].text, textDescGlobal[colorScheme].fa);
                             } else {
-                                this.generateDesc(tydenOznaceni, dateAsText, textDescGlobal[barevneSchema].title, textDescGlobal[barevneSchema].textPast, textDescGlobal[barevneSchema].fa);
+                                this.generateDesc(tydenOznaceni, dateAsText, textDescGlobal[colorScheme].title, textDescGlobal[colorScheme].textPast, textDescGlobal[colorScheme].fa);
                             }
 
                          } else {
@@ -150,44 +154,44 @@ var ZobrazUsera = function ZobrazUsera(instanceUsera) {
 
                         }
                 else if (markedDate === 0) {
-                    console.log("Pracuji na " + barevneSchema + " a pro tento vek nemam data.");
+                    console.log("Pracuji na " + colorScheme + " a pro tento vek nemam data.");
                 }
                 else {
-                    console.log("Pracuji na " + barevneSchema + " a NENASEL jsem tyden oznaceni" + " pro typ " + typeof markedDate + " ktery je " + markedDate);
+                    console.log("Pracuji na " + colorScheme + " a NENASEL jsem tyden oznaceni" + " pro typ " + typeof markedDate + " ktery je " + markedDate);
                 }
             }
     } else {}
 };
 
-    // pridava ukazatel
-    ZobrazUsera.prototype.youAreHere = function youAreHere () {
-        var weekId = "#" + this.navstevnik.vratRozdilTydnu();
-        this.addNonStandardDate(this.navstevnik.vratRozdilTydnu(),'youAreHere');
+    // adding Map-marker to actual  week in life
+    ShowUser.prototype.youAreHere = function youAreHere () {
+        var weekId = "#" + this.navstevnik.returnWeekDifference();
+        this.addNonStandardDate(this.navstevnik.returnWeekDifference(),'youAreHere');
         $(weekId).append("<div class='map-marker-yah'><i class='fa fa-map-marker fa-5x' style='color: #fe576b'></i></div>");
     };
 
-    // obarvi posledni den
-    ZobrazUsera.prototype.lastDay = function lastDay () {
-        var lastdayWeek = this.navstevnik.vratRozdilTydnu(birthDayGlobalVar,this.navstevnik.rokUmrti());
-        // zeptat se jQuery na lastchild by asi fungovalo lepe
+    // colors last week in life
+    ShowUser.prototype.lastDay = function lastDay () {
+        var lastdayWeek = this.navstevnik.returnWeekDifference(birthDayGlobalVar,this.navstevnik.deathYear());
+        // asking jQuery for lastchild would be more mature approach
         this.addNonStandardDate(lastdayWeek - 1 ,'lastDay');
     };
 
-    // funkcionalita, ktera obarvi kosticku pevne zadanym datem - poradim tydne v zivote
-    ZobrazUsera.prototype.addNonStandardDate = function addNonStandardDate (week, barva) {
+    // Colours fixed week color without addColour fn.  If 1. vaccination exist in 7th week, this adds colour to 7th week.
+    ShowUser.prototype.addNonStandardDate = function addNonStandardDate (week, color) {
         var dateAsText = this.makeDateFromWeekNumber(week);
         var weekId = "#" + week;
-        $(weekId).toggleClass(barva);
-        if (this.navstevnik.vratRozdilTydnu() < week) {
-            this.generateDesc(weekId, dateAsText, textDescGlobal[barva].title, textDescGlobal[barva].text, textDescGlobal[barva].fa); // texts for the future
+        $(weekId).toggleClass(color);
+        if (this.navstevnik.returnWeekDifference() < week) {
+            this.generateDesc(weekId, dateAsText, textDescGlobal[color].title, textDescGlobal[color].text, textDescGlobal[color].fa); // texts for the future
         } else {
-            this.generateDesc(weekId, dateAsText, textDescGlobal[barva].title, textDescGlobal[barva].textPast, textDescGlobal[barva].fa); // texts for the past
+            this.generateDesc(weekId, dateAsText, textDescGlobal[color].title, textDescGlobal[color].textPast, textDescGlobal[color].fa); // texts for the past
         }
         this.doNotMarkId.push(weekId);
     };
 
-    // jako divId musi byt vlozeny string (cislo id) s #
-    ZobrazUsera.prototype.generateDesc = function generateDesc (divId, dateAsText, title, text, fontAwesome){
+    // adds pop-up description and font-awesome icon with powertip.js library. divId must be string with # at the beginning.
+    ShowUser.prototype.generateDesc = function generateDesc (divId, dateAsText, title, text, fontAwesome){
         if ($(divId).prop('title')) {
             console.log("description existuje na divId " + divId + ', vynechávám id');
         } else {
@@ -203,38 +207,39 @@ var ZobrazUsera = function ZobrazUsera(instanceUsera) {
         }
     };
 
-    // metoda zobrazujici uspechy dosazene lidmi starsimi nez uzivatel. Oznaci divy id + prislusnou tridou
-    ZobrazUsera.prototype.showFunFacts = function showFunFacts() {
+    // shows additional boxes with motivational text for user younger than people in the texts
+    ShowUser.prototype.showFunFacts = function showFunFacts() {
         var funFactsLength = funFacts.length;
         var addedText = '';
         var addedTitle = '';
         for (var i = 0; i < funFactsLength; i++) {
             if (funFacts[i].age > this.navstevnik.age()) {
-                var markedDate = this.navstevnik.vratRozdilTydnu(funFacts[i].age);
+                var markedDate = this.navstevnik.returnWeekDifference(funFacts[i].age);
                 var dateAsText = this.makeDateFromWeekNumber(markedDate);
-                var tydenOznaceni = "#" + markedDate;
+                var markedWeek = "#" + markedDate;
                 var randomRGBcolor = "#" + Math.floor(Math.random()*16777215).toString(16);
-                    $(tydenOznaceni).toggleClass('funFacts').css('background', randomRGBcolor);
+                    $(markedWeek).toggleClass('funFacts').css('background', randomRGBcolor);
                     addedText = funFacts[i].text;
-                    addedTitle = funFacts[i].name + ', ' + funFacts[i].age + ' let';
-                    this.generateDesc(tydenOznaceni, dateAsText, addedTitle, addedText, this.randomFAicon());
-                    // pridano kvuli konfliktu v powertip, kdy nejde oznacit stejny div 2x
-                    this.doNotMarkId.push(tydenOznaceni);
+                    addedTitle = 'Dejte to jako: ' + funFacts[i].name + '. ' + funFacts[i].age + ' let';
+                    this.generateDesc(markedWeek, dateAsText, addedTitle, addedText, this.randomFAicon());
+                    this.doNotMarkId.push(markedWeek);
             } else {}
             }
 
         };
 
-    // ze zadaneho cisla tydne od pocatku zivota vrati mesic a rok od
-    ZobrazUsera.prototype.makeDateFromWeekNumber = function makeDateFromWeekNumber(weekId) {
-        return this.navstevnik.datumNarozeniToDate().add(weekId, 'w').format('MMMM YYYY');
+    // returns string with month and year from week number (id). Serves for adding right dates to generateDesc
+    ShowUser.prototype.makeDateFromWeekNumber = function makeDateFromWeekNumber(weekId) {
+        return this.navstevnik.birthDateToDate().add(weekId, 'w').format('MMMM YYYY');
     };
 
-    ZobrazUsera.prototype.randomFAicon = function randomFAIcon(){
+    // returns random icon number from FA icon choosen at funfactsdata.js
+    ShowUser.prototype.randomFAicon = function randomFAIcon(){
     var randomIco = Math.floor(Math.random()*(funFactsFontAwesomeIcons.length));
         return funFactsFontAwesomeIcons[randomIco];
     };
-    // změna názvu měsíců v Moment.js
+
+    // change months names in Moment.js
     moment.locale('en', {
     months : [
         "Leden", "Únor", "Březen", "Duben", "Květen", "Červen", "Červenec",
@@ -248,21 +253,21 @@ $("form").submit(function formClick(event) {
   var formInputJmeno = $("#datum_narozeni").val();
   var formInputPohlavi = $("#pohlavi").val();
   var navstevnik = new User(formInputJmeno,formInputPohlavi);
-  var vykresleni = new ZobrazUsera(navstevnik);
-  birthDayGlobalVar = navstevnik.datumNarozeniToDate();
+  var vykresleni = new ShowUser(navstevnik);
+  birthDayGlobalVar = navstevnik.birthDateToDate();
   sexGlobalVar = navstevnik.sex();
-  vykresleni.generujZaklad();
+  vykresleni.generateBoxes();
   vykresleni.youAreHere();
   vykresleni.lastDay();
   vykresleni.addNonStandardDate(9, "vaccination");
   vykresleni.showFunFacts();
-  vykresleni.doplnBarvu("militaryService");
-  vykresleni.doplnBarvu("retirement");
-  vykresleni.doplnBarvu("firstMarriageAge");
-  vykresleni.doplnBarvu("firstChildAge");
-  vykresleni.doplnBarvu("primarySchool");
-  vykresleni.doplnBarvu("secondarySchool");
-  vykresleni.doplnBarvu("university");
+  vykresleni.addColor("militaryService");
+  vykresleni.addColor("retirement");
+  vykresleni.addColor("firstMarriageAge");
+  vykresleni.addColor("firstChildAge");
+  vykresleni.addColor("primarySchool");
+  vykresleni.addColor("secondarySchool");
+  vykresleni.addColor("university");
 
 
 });
