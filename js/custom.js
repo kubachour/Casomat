@@ -250,6 +250,7 @@ var ShowUser = function ShowUser(instanceUsera) {
 $("form").submit(function formClick(event) {
   event.preventDefault();
   $( ".ctverce" ).empty();
+  $("#text-nad-boxy").empty();
   var formInputJmeno = $("#datum_narozeni").val();
   var formInputPohlavi = $("#pohlavi").val();
   var navstevnik = new User(formInputJmeno,formInputPohlavi);
