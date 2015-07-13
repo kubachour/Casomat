@@ -197,7 +197,7 @@ var ShowUser = function ShowUser(instanceUsera) {
         } else {
               $(divId).data('powertipjq', $([
                 '<div>',
-                '<p><b>' + title + ' - ' +  dateAsText + '</b></p>',
+                '<p><b>' + dateAsText + ' - ' + title + '</b></p>',
                 '<p><i class="' + fontAwesome + ' fa-2x"></i> ' + text + '</p>',
                 '</div>'
               ].join('\n')));
@@ -220,7 +220,7 @@ var ShowUser = function ShowUser(instanceUsera) {
                 var randomRGBcolor = "#" + Math.floor(Math.random()*16777215).toString(16);
                     $(markedWeek).toggleClass('funFacts').css('background', randomRGBcolor);
                     addedText = funFacts[i].text;
-                    addedTitle = 'Dejte to jako: ' + funFacts[i].name + '. ' + funFacts[i].age + ' let';
+                    addedTitle = funFacts[i].age + ' let. ' + 'Dejte to jako: ' + funFacts[i].name + '.';
                     this.generateDesc(markedWeek, dateAsText, addedTitle, addedText, this.randomFAicon());
                     this.doNotMarkId.push(markedWeek);
             } else {}
@@ -268,6 +268,6 @@ $("form").submit(function formClick(event) {
   vykresleni.addColor("primarySchool");
   vykresleni.addColor("secondarySchool");
   vykresleni.addColor("university");
-
+  $('#text-nad-boxy').append("<p class='lead'>Kostičky přestavují jednotlivé týdny vašeho života vypočtené z předpokládané doby dožití. <br>Najdeďte na ně myší a dozvíte se, co která znamená.</p>");
 
 });

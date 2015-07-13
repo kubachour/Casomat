@@ -7,10 +7,12 @@
 }
 
 .box {
-    width: 1.923076923076923%;
-    height: 0.9615384615384615vw;
+    /*width: 1.923076923076923%;
+    height: 0.9615384615384615vw;*/
+    width: 2.5%;
+    height: 2.5vh;
     border: 1px solid #a6a6a6;
-    margin: 0.5%;
+    margin: 0.35%;
     float:left;
 }
 
@@ -67,3 +69,13 @@
     background: mediumvioletred;
     border: mediumvioletred;
 }
+
+/* mobile adjustments */
+@media (max-width: 550px) {
+    .box {
+        width: 4%;
+        height: 4vh;
+        margin: 0.5%;
+    }
+}
+
